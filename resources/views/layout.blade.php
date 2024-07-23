@@ -8,7 +8,7 @@
     <header>
         @include('includes.nav')
     </header>
-    <div id="main" class="h-full max-w-[1400px] m-auto min-h-screen">
+    <div id="main" class="h-full max-w-[1400px] m-auto min-h-screen px-12">
         @yield('content')
     </div>
     <footer>

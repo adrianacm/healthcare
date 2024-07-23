@@ -14,7 +14,12 @@
 
         @if(Auth::user())
             <a href="{{ route('patients') }}">Patients</a>
-            <a href="{{ route('logout') }}">Log out</a>
+
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit">Logout</button>
+            </form>
+
         @elseif(!Auth::user() && request()->routeIs('login'))
             <a href="{{ route('register') }}">Register</a>
         @else

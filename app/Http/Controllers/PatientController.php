@@ -18,15 +18,15 @@ class PatientController extends Controller
     public function index(): View|Factory|Application
     {
         $patients = Patient::all();
-        return view('pages.patients-view', compact('patients'));
+        return view('pages.patients-list', compact('patients'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View|Factory|Application
     {
-        //
+        return view('pages.patient-form', ['patient' => new Patient]);
     }
 
     /**
@@ -45,7 +45,7 @@ class PatientController extends Controller
             'postcode' => 'required|string|max:8',
             'dob' => 'required|date',
             'gender' => 'required|string|max:255',
-            'status' => 'required|tinyint|default:1',
+            'status' => 'required|integer',
         ]);
 
         Auth::user()->patients()->create($request->all());
@@ -55,27 +55,55 @@ class PatientController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the patient
      */
-    public function show(string $id)
+    public function show(Patient $patient): View|Factory|Application
     {
-        //
+        return view('pages.patient-view', ['patient' => $patient]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the patient
      */
-    public function edit(string $id)
+    public function edit(Patient $patient): View|Factory|Application
     {
-        //
+        return view('pages.patient-form', ['patient' => $patient]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the patient
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Patient $patient): RedirectResponse
     {
-        //
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:patients,email,' . $patient->id,
+            'phone' => 'required|string|max:15',
+            'nhs_number' => 'required|string|max:10|unique:patients,nhs_number,' . $patient->id,
+            'street' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'postcode' => 'required|string|max:10',
+            'dob' => 'required|date',
+            'gender' => 'required|string||max:255',
+            'status' => 'required|integer',
+        ]);
+
+        $patient->update([
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'nhs_number' => $request->nhs_number,
+            'street' => $request->street,
+            'city' => $request->city,
+            'postcode' => $request->postcode,
+            'dob' => $request->dob,
+            'gender' => $request->gender,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('patients')->with('success', 'Patient updated successfully.');
     }
 
     /**
@@ -83,6 +111,16 @@ class PatientController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        // Find the patient
+        $patient = Patient::findOrFail($id);
+
+        $patient->delete();
+
+        // Redirect with a success message
+        return redirect()->route('patients')->with('success', 'Patient deleted successfully.');
     }
 }

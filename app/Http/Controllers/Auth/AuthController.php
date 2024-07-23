@@ -27,15 +27,15 @@ class AuthController extends Controller
      */
     public function login(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
+        $fields = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($fields)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('home');
+            return redirect()->intended('welcome');
         }
 
         throw ValidationException::withMessages([
@@ -66,8 +66,8 @@ class AuthController extends Controller
             'surname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|confirmed|min:8',
-            'role' => 'required|tinyint|default:1',
-            'status' => 'required|tinyint|default:1',
+            'role' => 'required|integer',
+            'status' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -83,6 +83,6 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('home');
+        return redirect()->route('patients')->with('success', trans('auth.register_success'));
     }
 }

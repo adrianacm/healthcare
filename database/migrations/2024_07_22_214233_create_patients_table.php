@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('created_by'); // Foreign key to users table
+            $table->unsignedBigInteger('user_id'); // Foreign key to users table
             $table->string('firstname');
             $table->string('lastname');
             $table->string('email')->unique();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
 
-            $table->foreign('created_by')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
