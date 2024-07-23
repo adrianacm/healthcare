@@ -26,7 +26,7 @@ DB_PASSWORD=
 - php artisan migrate
 - php artisan db:seed
 
-##Tailwind CSS
+## Tailwind CSS
   
 - npm install -D tailwindcss postcss autoprefixer
 - npx tailwindcss init -p
